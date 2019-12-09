@@ -1,5 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
@@ -231,7 +236,7 @@ int main(void)
         uint32_t shader_prog = create_shader_program(vertex, fragment);
 
         float vertices[] = {
-                // positions          // colors           // texture coords
+                // positions          // colours           // texture coords
                 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
                 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
                 -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
@@ -275,9 +280,38 @@ int main(void)
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, texture2);
 
+                // create transformations
+                glm::mat4 transform = glm::mat4(1.0f);
+                transform = glm::rotate(transform,
+                                        (float)glfwGetTime(),
+                                        glm::vec3(0.0f, 0.0f, 1.0f));
+                transform = glm::translate(transform,
+                                           glm::vec3(0.5f, -0.5f, 0.0f));
+
                 glUseProgram(shader_prog);
+                uint32_t transformLoc = glGetUniformLocation(shader_prog,
+                                                             "transform");
+                glUniformMatrix4fv(transformLoc,
+                                   1,
+                                   GL_FALSE,
+                                   glm::value_ptr(transform));
 
                 glBindVertexArray(VAO);
+                glDrawElements(GL_TRIANGLES,
+                               sizeof(indices)/sizeof(indices[0]),
+                               GL_UNSIGNED_INT,
+                               0);
+
+                transform = glm::mat4(1.0f);
+                transform = glm::translate(transform,
+                                           glm::vec3(-0.5f, 0.5f, 0.0f));
+                transform = glm::scale(transform,
+                                       glm::vec3(1.0f, sin(glfwGetTime()), 1.0f));
+                glUniformMatrix4fv(transformLoc,
+                                   1,
+                                   GL_FALSE,
+                                   glm::value_ptr(transform));
+
                 glDrawElements(GL_TRIANGLES,
                                sizeof(indices)/sizeof(indices[0]),
                                GL_UNSIGNED_INT,
