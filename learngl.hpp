@@ -116,11 +116,14 @@ init_gl(uint32_t scrwidth, uint32_t scrheight)
 }
 
 static uint32_t
-init_VAO(float *vertices, size_t verts_sz)
+init_VAO(float *vertices,
+         size_t verts_sz,
+         uint32_t *indices,
+         size_t indices_sz)
 {
         uint32_t VAO;
-        unsigned int VBO;
-        unsigned int EBO;
+        uint32_t VBO;
+        uint32_t EBO;
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -131,6 +134,12 @@ init_VAO(float *vertices, size_t verts_sz)
         glBufferData(GL_ARRAY_BUFFER,
                      verts_sz,
                      vertices,
+                     GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     indices_sz,
+                     indices,
                      GL_STATIC_DRAW);
 
         return VAO;
