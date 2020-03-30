@@ -15,18 +15,27 @@ int main(void)
         uint32_t shader_prog = create_shader_program(vertex, fragment);
 
         float vertices[] = {
+                -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
         };
         uint32_t indices[] = {
+                0, 1, 2,
+                2, 3, 0,
         };
         uint32_t VAO = init_VAO(vertices,
                                 sizeof(vertices),
                                 indices,
                                 sizeof(indices));
 
-        init_vert_attr(0, 0, 0, 0);
+        init_vert_attr(0, 3, 8, 0);
+        init_vert_attr(1, 3, 8, 3);
+        init_vert_attr(2, 2, 8, 6);
 
         uint32_t texture;
         glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
 
         // set the texture wrapping/filtering options (on the currently bound
         // texture object)
@@ -38,7 +47,7 @@ int main(void)
         int32_t width;
         int32_t height;
         int32_t nrChannels;
-        uint8_t *data = stbi_load("cvpr2018_log_512x512.jpg",
+        uint8_t *data = stbi_load("container.jpg",
                                   &width,
                                   &height,
                                   &nrChannels,
@@ -62,6 +71,8 @@ int main(void)
         while (!glfwWindowShouldClose(window)) {
                 glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT);
+
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
                 glfwSwapBuffers(window);
                 glfwPollEvents();
