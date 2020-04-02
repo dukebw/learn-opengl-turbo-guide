@@ -1,5 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "learngl.hpp"
 #include <cassert>
 #include <cstdlib>
@@ -33,9 +31,9 @@ int main(void)
         init_vert_attr(1, 3, 8, 3);
         init_vert_attr(2, 2, 8, 6);
 
-        uint32_t texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        uint32_t texture1;
+        glGenTextures(1, &texture1);
+        glBindTexture(GL_TEXTURE_2D, texture1);
 
         // set the texture wrapping/filtering options (on the currently bound
         // texture object)
@@ -44,28 +42,8 @@ int main(void)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        int32_t width;
-        int32_t height;
-        int32_t nrChannels;
-        uint8_t *data = stbi_load("container.jpg",
-                                  &width,
-                                  &height,
-                                  &nrChannels,
-                                  0);
-        assert(data != NULL);
-
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     GL_RGB,
-                     width,
-                     height,
-                     0,
-                     GL_RGB,
-                     GL_UNSIGNED_BYTE,
-                     data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        stbi_image_free(data);
+        int32_t result = load_texture_image("container.jpg", GL_RGB);
+        assert(result == 0);
 
         glUseProgram(shader_prog);
         while (!glfwWindowShouldClose(window)) {

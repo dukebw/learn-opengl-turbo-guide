@@ -1,6 +1,8 @@
 #ifndef _LEARN_GL_H_
 #define _LEARN_GL_H_
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
@@ -10,9 +12,9 @@
 #include <cstdio>
 
 static void
-checkCompileErrors(unsigned int shader, std::string type)
+checkCompileErrors(uint32_t shader, std::string type)
 {
-        int success;
+        int32_t success;
         char infoLog[1024];
         if (type != "PROGRAM") {
                 glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -80,7 +82,7 @@ create_shader_program(uint32_t vertex, uint32_t fragment)
 }
 
 static void
-framebuffer_size_callback(GLFWwindow* window, int width, int height)
+framebuffer_size_callback(GLFWwindow* window, int32_t width, int32_t height)
 {
     glViewport(0, 0, width, height);
 }
@@ -155,6 +157,36 @@ init_vert_attr(uint32_t index, int32_t size, size_t stride, size_t offset)
                               stride * sizeof(float),
                               (void*)(offset * sizeof(float)));
         glEnableVertexAttribArray(index);
+}
+
+static int32_t
+load_texture_image(const char *fname, GLenum format)
+{
+        int32_t width;
+        int32_t height;
+        int32_t nrChannels;
+        uint8_t *data = stbi_load(fname,
+                                  &width,
+                                  &height,
+                                  &nrChannels,
+                                  0);
+        if (data == NULL)
+                return 1;
+
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_RGB,
+                     width,
+                     height,
+                     0,
+                     format,
+                     GL_UNSIGNED_BYTE,
+                     data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(data);
+
+        return 0;
 }
 
 #endif /* _LEARN_GL_H_ */
